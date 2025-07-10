@@ -12,6 +12,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stddef.h>
 
 #define ISSPACE(X) isspace((unsigned char)(X))
 #define ISDIGIT(X) isdigit((unsigned char)(X))
@@ -1833,7 +1834,7 @@ static char *merge(
   char *a,
   char *b,
   int (*cmp)(const char*,const char*),
-  int offset
+  ptrdiff_t offset
 ){
   char *ptr, *head;
 
@@ -1886,11 +1887,11 @@ static char *msort(
   char **next,
   int (*cmp)(const char*,const char*)
 ){
-  unsigned long offset;
+  ptrdiff_t offset;
   char *ep;
   char *set[LISTSIZE];
   int i;
-  offset = (unsigned long)((char*)next - (char*)list);
+  offset = (char*)next - (char*)list;
   for(i=0; i<LISTSIZE; i++) set[i] = 0;
   while( list ){
     ep = list;
@@ -2042,7 +2043,7 @@ static int handleswitch(int i, FILE *err)
         break;
       case OPT_INT:
       case OPT_FINT:
-        lv = strtol(cp,&end,0);
+        lv = (int)strtol(cp,&end,0);
         if( *end ){
           if( err ){
             fprintf(err,"%sillegal character in integer argument.\n",emsg);
@@ -2830,7 +2831,7 @@ void Parse(struct lemon *gp)
   struct pstate ps;
   FILE *fp;
   char *filebuf;
-  unsigned int filesize;
+  long filesize;
   int lineno;
   int c;
   char *cp, *nextcp;
